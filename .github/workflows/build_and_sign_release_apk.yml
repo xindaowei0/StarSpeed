@@ -12,7 +12,7 @@ on:
       announceOnMessengers:
         description: "Announce new release on Discord and Telegram channels"
         required: true
-        default: "yes"
+        default: "no"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -127,21 +127,21 @@ jobs:
         run: curl ipinfo.io
 
       - name: Downloading binary objects cache to $HOME/cache
-        run: rclone copy --transfers=128 --retries=10 cache:kiwibrowser-next-builds-${{ matrix.platform }}/ $HOME/kiwibrowser-next-builds-${{ matrix.platform }}
+        run: rclone copy --transfers=128 --retries=10 --sftp-no-agent cache:starspeed-next-builds-${{ matrix.platform }}/ $HOME/starspeed-next-builds-${{ matrix.platform }}
 
-      - name: Transferring build to the standard Kiwi Browser run ID
-        run: rclone copy --transfers=128 --retries=10 cache:kiwibrowser-next-builds-${{ matrix.platform }}/ cache:kiwibrowser-builds/${{ github.run_id }}/${{ matrix.platform }}
+      - name: Transferring build to the standard StarSpeed Browser run ID
+        run: rclone copy --transfers=128 --retries=10 --sftp-no-agent cache:starspeed-next-builds-${{ matrix.platform }}/ cache:starspeed-builds/${{ github.run_id }}/${{ matrix.platform }}
 
       - name: Listing files
         run: |
           echo $HOME
-          ls -la $HOME/kiwibrowser-next-builds-${{ matrix.platform }}
+          ls -la $HOME/starspeed-next-builds-${{ matrix.platform }}
 
       - name: Uploading APK
         uses: actions/upload-artifact@v4
         with:
           name: apk-${{ matrix.platform }}
-          path: /home/runner/kiwibrowser-next-builds-${{ matrix.platform }}/
+          path: /home/runner/starspeed-next-builds-${{ matrix.platform }}/
 
   sign_and_upload:
     runs-on: ubuntu-latest
@@ -264,99 +264,99 @@ jobs:
           curl 'https://${{ secrets.RELEASE_HOST }}/?run_id=${{ github.run_id }}&dk=${{ secrets.DEPLOY_KEY }}&publish=1&target=aab'
 
       - name: Downloading artifacts from storage
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'xindaowei0' }}
         run: |
-          rclone copy --transfers=128 --retries=100 cache:kiwibrowser-builds/${{ github.run_id }}/arm/ ./apk-arm 
-          rclone copy --transfers=128 --retries=100 cache:kiwibrowser-builds/${{ github.run_id }}/arm64/ ./apk-arm64
-          rclone copy --transfers=128 --retries=100 cache:kiwibrowser-builds/${{ github.run_id }}/x86/ ./apk-x86
-          rclone copy --transfers=128 --retries=100 cache:kiwibrowser-builds/${{ github.run_id }}/x64/ ./apk-x64
+          rclone copy --transfers=128 --retries=100 --sftp-no-agent cache:starspeed-builds/${{ github.run_id }}/arm/ ./apk-arm 
+          rclone copy --transfers=128 --retries=100 --sftp-no-agent cache:starspeed-builds/${{ github.run_id }}/arm64/ ./apk-arm64
+          rclone copy --transfers=128 --retries=100 --sftp-no-agent cache:starspeed-builds/${{ github.run_id }}/x86/ ./apk-x86
+          rclone copy --transfers=128 --retries=100 --sftp-no-agent cache:starspeed-builds/${{ github.run_id }}/x64/ ./apk-x64
 
       - name: Uploading release asset (arm-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'xindaowei0' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./apk-arm/ChromePublic-DevSigned.apk
-          asset_name: com.kiwibrowser.browser-arm-${{ github.run_id }}-github.apk
+          asset_name: com.starspeed.browser-arm-${{ github.run_id }}-github.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading release asset (arm64-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'xindaowei0' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./apk-arm64/ChromePublic-DevSigned.apk
-          asset_name: com.kiwibrowser.browser-arm64-${{ github.run_id }}-github.apk
+          asset_name: com.starspeed.browser-arm64-${{ github.run_id }}-github.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading release asset (x86-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'xindaowei0' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./apk-x86/ChromePublic-DevSigned.apk
-          asset_name: com.kiwibrowser.browser-x86-${{ github.run_id }}-github.apk
+          asset_name: com.starspeed.browser-x86-${{ github.run_id }}-github.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading release asset (x64-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'xindaowei0' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./apk-x64/ChromePublic-DevSigned.apk
-          asset_name: com.kiwibrowser.browser-x64-${{ github.run_id }}-github.apk
+          asset_name: com.starspeed.browser-x64-${{ github.run_id }}-github.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading dev asset (arm-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'xindaowei0' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./apk-arm/ChromePublic-Next-DevSigned.apk
-          asset_name: com.kiwibrowser.browser.dev-arm-${{ github.run_id }}-github.apk
+          asset_name: com.starspeed.browser.dev-arm-${{ github.run_id }}-github.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading dev asset (arm64-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'xindaowei0' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./apk-arm64/ChromePublic-Next-DevSigned.apk
-          asset_name: com.kiwibrowser.browser.dev-arm64-${{ github.run_id }}-github.apk
+          asset_name: com.starspeed.browser.dev-arm64-${{ github.run_id }}-github.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading dev asset (x86-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'xindaowei0' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./apk-x86/ChromePublic-Next-DevSigned.apk
-          asset_name: com.kiwibrowser.browser.dev-x86-${{ github.run_id }}-github.apk
+          asset_name: com.starspeed.browser.dev-x86-${{ github.run_id }}-github.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Uploading dev asset (x64-signed)
-        if: ${{ github.repository_owner == 'kiwibrowser' }}
+        if: ${{ github.repository_owner == 'xindaowei0' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./apk-x64/ChromePublic-Next-DevSigned.apk
-          asset_name: com.kiwibrowser.browser.dev-x64-${{ github.run_id }}-github.apk
+          asset_name: com.starspeed.browser.dev-x64-${{ github.run_id }}-github.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Send announcement on Discord
