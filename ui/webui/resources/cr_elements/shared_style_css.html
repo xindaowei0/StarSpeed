@@ -123,12 +123,13 @@
       }
 
       paper-tooltip::part(tooltip) {
-        border-radius: var(--paper-tooltip-border-radius, 2px);
-        font-size: 92.31%;  /* Effectively 12px if the host default is 13px. */
-        font-weight: 500;
-        max-width: 330px;
+        border-radius: var(--paper-tooltip-border-radius, 4px);  /* 增加圆角，更符合国内设计风格 */
+        font-size: 14px;  /* 调整为更适合国内用户阅读的字体大小 */
+        font-weight: 400;  /* 调整字重，更符合国内设计风格 */
+        max-width: 350px;  /* 增加最大宽度，显示更多内容 */
         min-width: var(--paper-tooltip-min-width, 200px);
-        padding: var(--paper-tooltip-padding, 10px 8px);
+        padding: var(--paper-tooltip-padding, 12px 10px);  /* 增加内边距，更舒适的视觉体验 */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);  /* 增加阴影，更有层次感 */
       }
 
       /* Typography */
